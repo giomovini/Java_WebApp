@@ -1,0 +1,42 @@
+1. PARA CRIAR UMA SEQUENCE NO ORACLE:
+
+create sequence usuario_sequence
+  minvalue 1
+  maxvalue 99999999
+  start with 1000
+  cache 20
+
+2. PARA EXECUTAR O INSERT NO DAO JAVA:
+
+sql = "insert into tb_teste values(usuario_sequence.nextval, ?, ?, ?, ?)";
+
+3. PARA CRIPTOGRAFAR UMA SENHA E CONVERSÃO DE DATA
+- as datas manipuladas no Java são do tipo LocalDate (java.time), mas a data recebida pelo pelo banco de dados é do tipo Date (java.sql). Abaixo tem o processo de conversão.
+
+
+		String senha = criptografar("selmini12345");
+		LocalDate data = formatarData("20/08/1976");
+		
+		
+
+	private static LocalDate formatarData(String dataString) {
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate data = LocalDate.parse(dataString, formato);
+		return data;
+		
+	}
+
+	private static String criptografar(String senha) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+		MessageDigest algoritmo = MessageDigest.getInstance("SHA-256");
+		byte[] aux = algoritmo.digest(senha.getBytes("UTF-8"));
+		StringBuilder hexString = new StringBuilder();
+		for(byte b : aux) {
+			hexString.append(String.format("%02X", 0xFF & b));
+		}
+		String senhahex = hexString.toString();
+		return senhahex;
+	}
+
+
+conversão de Date (java.sql) para LocalDate (java.time):
+LocalDate localDate = Date.valueOf(data).toLocalDate();
